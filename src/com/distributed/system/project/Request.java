@@ -6,7 +6,7 @@ import java.io.Serializable;
 *AUTHOR: HUSSEIN AWALA
 *this class is a descriptor of a real sensor data type and ID
 * it has the ID of sensor, the port, the identifier and the variables
- */
+*/
 
 public class Request implements Serializable{
     private int port;
