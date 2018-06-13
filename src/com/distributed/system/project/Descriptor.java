@@ -59,12 +59,16 @@ public class Descriptor implements Serializable {
     //the type of variables and the time for each refresh
     Request request;
 
-    public Descriptor(int type, int service, int capacity, double range, Request request) {
+    //the id of the last request served by the sensor having this descriptor
+    protected int lastRequestServed;
+
+    public Descriptor(int type, Point position, int service, int capacity, double range, Request request) {
         this.type = type;
         this.service = service;
         this.capacity = capacity;
         this.range = range;
         this.request = request;
+        this.position=position;
 
         this.state=NEW;
     }
@@ -163,5 +167,13 @@ public class Descriptor implements Serializable {
 
     public void decNbRoutedRequest(){
         nbRoutedRequest--;
+    }
+
+    public int getLastRequestServed() {
+        return lastRequestServed;
+    }
+
+    public void setLastRequestServed(int lastRequestServed) {
+        this.lastRequestServed = lastRequestServed;
     }
 }
