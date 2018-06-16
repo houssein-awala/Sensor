@@ -9,12 +9,14 @@ public class BasicSensor extends UnicastRemoteObject implements ISensor{
     protected Data data;
     protected ConnectionWithDataServer connectionWithDataServer;
     protected ConnectionWithSupervisor connectionWithSupervisor;
-
-    public synchronized Descriptor accessToDescriptor(Descriptor descriptor){
-        if (descriptor!=null)
-            this.descriptor=descriptor;
-        return descriptor;
-
+    protected final Object lockDescriptor=new Object();
+    protected final Object lockData=new Object();
+    public Descriptor accessToDescriptor(Descriptor descriptor){
+        synchronized(lockDescriptor) {
+            if (descriptor != null)
+                this.descriptor = descriptor;
+            return descriptor;
+        }
     }
 
     public BasicSensor() throws RemoteException {
@@ -43,13 +45,14 @@ public class BasicSensor extends UnicastRemoteObject implements ISensor{
         return data;
     }
 
-    public synchronized Data accessToData(String newData){
-        if (newData==null)
-        {
+    public Data accessToData(String newData){
+        synchronized(lockData) {
+            if (newData == null) {
+                return this.data;
+            }
+            this.data.readData(newData);
             return this.data;
         }
-        this.data.readData(newData);
-        return this.data;
     }
     public void changeTheStateToReady() throws IOException {
         connectionWithSupervisor.changeStateToReady();
