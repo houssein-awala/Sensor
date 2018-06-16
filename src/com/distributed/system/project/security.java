@@ -10,6 +10,11 @@ import javax.crypto.Cipher;
 
 public class security {
 
+           // KeyPair keyPair = buildKeyPair();
+  //  PublicKey pubKey = keyPair.getPublic();
+//    PrivateKey privateKey = keyPair.getPrivate();
+        
+        
         public static KeyPair buildKeyPair() throws NoSuchAlgorithmException {
             final int keySize = 2048;
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
