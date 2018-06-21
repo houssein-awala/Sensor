@@ -1,7 +1,11 @@
 package com.distributed.system.project;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
 
 /*
@@ -12,6 +16,7 @@ import java.net.Socket;
 public class ConnectionWithSupervisor extends Thread{
     protected static final String hostSupervisor="SUPERVISOR";
     protected static final int portSupervisor=1111;
+    protected static final int portSupervisorUDP=1112;
     protected static final int timeBetweenEverySendOfDescriptor=5;
     protected BasicSensor sensor;
     protected Socket socket;
@@ -56,9 +61,21 @@ public class ConnectionWithSupervisor extends Thread{
 
     //this method is to send the descriptor while the sensor is alive
     public void sendDescriptorEveryTau() throws InterruptedException, IOException {
+        DatagramSocket datagramSocket=new DatagramSocket();
+        DatagramPacket datagramPacket;
+        InetAddress supervisorHost = InetAddress.getByName(hostSupervisor);
         while (true){
+            //refference: https://stackoverflow.com/questions/3997459/send-and-receive-serialize-object-on-udp
             sleep(timeBetweenEverySendOfDescriptor*1000);
-            objectOutputStream.writeObject(sensor.getDescriptor());
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(sensor.getDescriptor());
+            oos.flush();
+            // get the byte array of the object
+            byte[] data= baos.toByteArray();
+
+            datagramPacket=new DatagramPacket(data,data.length,supervisorHost,portSupervisorUDP);
+            datagramSocket.send(datagramPacket);
         }
     }
 }
