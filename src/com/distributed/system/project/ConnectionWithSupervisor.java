@@ -1,5 +1,7 @@
 package com.distributed.system.project;
 
+import sun.security.krb5.internal.crypto.Des;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -56,6 +58,10 @@ public class ConnectionWithSupervisor extends Thread{
     //send ready to Supervisor and notify the thread to continue to next step
     public synchronized void changeStateToReady() throws IOException {
         objectOutputStream.writeBoolean(true);
+        sensor.getDescriptor().setState(Descriptor.READY);
+        synchronized (sensor.getWaitForReady()) {
+            sensor.getWaitForReady().notify();
+        }
         this.notify();
     }
 

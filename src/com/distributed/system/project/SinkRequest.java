@@ -3,6 +3,8 @@ package com.distributed.system.project;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Stack;
+
 /*
  * @author:Hussein Awala
  * this class is a mobile agent represent the request of the user(SINK)
@@ -42,7 +44,9 @@ public class SinkRequest {
     //the result of the wanted service
     protected String result;
     //the sequence of sensors that transmit this request
-    protected ArrayList<String> path;
+    protected Stack<String> path;
+    //the host of last RoutingSensor
+    protected String hostOfLastRouter;
     /********************************************************************/
 
     public SinkRequest(int typeOfService, Point position) {
@@ -50,7 +54,7 @@ public class SinkRequest {
         this.position = position;
         this.state=WORKING;
         this.selectedSensors=new HashSet<>();
-        this.path=new ArrayList<>();
+        this.path=new Stack<>();
     }
 
     public int getTypeOfService() {
@@ -101,11 +105,19 @@ public class SinkRequest {
         this.result = result;
     }
 
-    public ArrayList<String> getPath() {
+    public Stack<String> getPath() {
         return path;
     }
 
-    public void setPath(ArrayList<String> path) {
+    public void setPath(Stack<String> path) {
         this.path = path;
+    }
+
+    public String getHostOfLastRouter() {
+        return hostOfLastRouter;
+    }
+
+    public void setHostOfLastRouter(String hostOfLastRouter) {
+        this.hostOfLastRouter = hostOfLastRouter;
     }
 }
