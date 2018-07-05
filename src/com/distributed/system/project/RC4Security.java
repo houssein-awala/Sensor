@@ -1,4 +1,6 @@
+package com.distributed.system.project;
 
+import java.util.Base64;
 import java.util.Random;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -13,7 +15,7 @@ import org.apache.commons.codec.binary.Base64;
  */
 public class RC4Security {
 
-public String master key;
+public String masterkey;
 
     public static String encrypt(String key, String initVector, String value) {
         try {

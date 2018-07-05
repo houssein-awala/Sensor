@@ -47,6 +47,7 @@ public class RequestHandler extends Thread{
                 }
                 //encrypt the data with RC4
                 String data=sensor.getData().getData();
+                data=RC4Security.encrypt(key,"jasihasdas",data);
                 request.setResult(data);
                 request.setState(SinkRequest.OK);
                 sendRequest(retour,request);

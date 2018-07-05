@@ -149,4 +149,8 @@ public class SinkRequest {
     {
         return selectedSensors.contains(id);
     }
+
+    public byte[] getMasterKey() {
+        return masterKey;
+    }
 }
