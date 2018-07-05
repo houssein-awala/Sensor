@@ -27,6 +27,8 @@ public class SinkRequest {
     protected int typeOfService;
     //the position of the wanted service
     protected Point position;
+    //the encrypted master Key
+    protected byte[] masterKey;
     /********************************************************************/
 
     //filling by Supervisor
@@ -35,6 +37,8 @@ public class SinkRequest {
     protected String selectedSensor;
     //list of IDs of the previous selected sensors
     protected HashSet<String> selectedSensors;
+    //the id of this request
+    protected int requestID;
     /********************************************************************/
 
     //filling by Sensors
@@ -119,5 +123,30 @@ public class SinkRequest {
 
     public void setHostOfLastRouter(String hostOfLastRouter) {
         this.hostOfLastRouter = hostOfLastRouter;
+    }
+
+    public int getRequestID() {
+        return requestID;
+    }
+
+    public void setRequestID(int requestID) {
+        this.requestID = requestID;
+    }
+
+    public void setMasterKey(byte[] masterKey) {
+        this.masterKey = masterKey;
+    }
+
+    //add the selected sensor to the set of selected sensors and empty the first #By Mohamad Mohyeddine
+    public void addCurrentToSensors()
+    {
+        selectedSensors.add(selectedSensor);
+        selectedSensor="";
+    }
+
+    //Test if the sensor is unreachable (exists in the set of selected sensors) #By Mohamad Mohyeddine
+    public boolean isUnReached(String id)
+    {
+        return selectedSensors.contains(id);
     }
 }

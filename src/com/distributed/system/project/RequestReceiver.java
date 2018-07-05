@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * @author Hussein Awala
+ */
 public class RequestReceiver extends Thread {
     protected BasicSensor sensor;
     public static final int portToReceive=1122;

@@ -2,6 +2,10 @@ package com.distributed.system.project;
 
 import java.awt.*;
 import java.io.Serializable;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /*
  *AUTHOR: HUSSEIN AWALA
@@ -62,15 +66,28 @@ public class Descriptor implements Serializable {
     //the id of the last request served by the sensor having this descriptor
     protected int lastRequestServed;
 
-    public Descriptor(int type, Point position, int service, int capacity, double range, Request request) {
+    //the host of the sensor
+    protected String host;
+
+    //the private key
+    protected transient PrivateKey privateKey;
+
+    //the public key
+    protected PublicKey publicKey;
+
+
+    public Descriptor(int type, Point position, int service, int capacity, double range, Request request,String host) throws NoSuchAlgorithmException {
         this.type = type;
         this.service = service;
         this.capacity = capacity;
         this.range = range;
         this.request = request;
         this.position=position;
-
+        this.host=host;
         this.state=NEW;
+        KeyPair keys =security.buildKeyPair();
+        publicKey=keys.getPublic();
+        privateKey=keys.getPrivate();
     }
 
     public String getId() {
@@ -175,5 +192,13 @@ public class Descriptor implements Serializable {
 
     public void setLastRequestServed(int lastRequestServed) {
         this.lastRequestServed = lastRequestServed;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 }

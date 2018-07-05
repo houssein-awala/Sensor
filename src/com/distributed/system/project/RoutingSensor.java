@@ -4,27 +4,25 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
 
+/**
+ * @author Hussein Awala
+ */
 public class RoutingSensor extends BasicSensor{
-    protected HashMap<String,String> routingTable;
-    private final Object lockRoutingTable=new Object();
+    protected HashMap<Integer,HashSet<String>> messagesManager;
 
     public RoutingSensor() throws RemoteException {
+        messagesManager=new HashMap<>();
     }
 
     public RoutingSensor(Descriptor descriptor) throws RemoteException {
         super(descriptor);
     }
 
-    public HashMap<String, String> getRoutingTable() {
-        synchronized (lockRoutingTable) {
-            return routingTable;
-        }
+    public synchronized HashMap<Integer, HashSet<String>> getMessagesManager() {
+        return messagesManager;
     }
 
-    public void setRoutingTable(HashMap<String, String> routingTable) {
-        synchronized (lockRoutingTable) {
-            this.routingTable = routingTable;
-        }
+    public synchronized void setMessagesManager(HashMap<Integer, HashSet<String>> messagesManager) {
+        this.messagesManager = messagesManager;
     }
-
 }

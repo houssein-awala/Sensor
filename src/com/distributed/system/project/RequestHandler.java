@@ -1,13 +1,14 @@
 package com.distributed.system.project;
 
-import sun.management.Sensor;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.Scanner;
 
+/**
+ * @author Hussein Awala
+ */
 public class RequestHandler extends Thread{
     BasicSensor sensor;
     Socket socket;
@@ -33,13 +34,20 @@ public class RequestHandler extends Thread{
             return request;
         }
     }
-    public boolean handleRequest(SinkRequest request){
+    public boolean handleRequest(SinkRequest request) throws Exception {
         if (request==null)
             return false;
         if (request.getState()==SinkRequest.WORKING){
             if (request.getSelectedSensor().equals(sensor.getDescriptor().getId())){
                 String retour=request.getPath().pop();
-                request.setResult(sensor.getData().getData());
+                byte[] masterKey=security.decrypt(sensor.getDescriptor().privateKey,request.masterKey);
+                String key="";
+                for (int i=0;i<masterKey.length;i++){
+                    key+=(char)masterKey[i];
+                }
+                //encrypt the data with RC4
+                String data=sensor.getData().getData();
+                request.setResult(data);
                 request.setState(SinkRequest.OK);
                 sendRequest(retour,request);
                 return true;
@@ -63,6 +71,11 @@ public class RequestHandler extends Thread{
     @Override
     public void run() {
         SinkRequest request=readRequest(socket);
-        handleRequest(request);
+        try {
+            handleRequest(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -4,6 +4,7 @@ import sun.security.krb5.internal.crypto.Des;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -23,6 +24,7 @@ public class ConnectionWithSupervisor extends Thread{
     protected BasicSensor sensor;
     protected Socket socket;
     protected ObjectOutputStream objectOutputStream;
+    protected ObjectInputStream objectInputStream;
 
     public ConnectionWithSupervisor(BasicSensor sensor) {
         this.sensor=sensor;
@@ -42,23 +44,29 @@ public class ConnectionWithSupervisor extends Thread{
     //this method is responsible for open the connection with the supervisor
     public void establishConnection() throws IOException {
         socket=new Socket(hostSupervisor,portSupervisor);
+        objectInputStream=new ObjectInputStream(socket.getInputStream());
+        objectOutputStream=new ObjectOutputStream(socket.getOutputStream());
     }
 
     //this method send the reference of the sensor to the supervisor
     public void sendReferenceToSupervisor() throws IOException {
-        objectOutputStream=new ObjectOutputStream(socket.getOutputStream());
         objectOutputStream.writeObject(sensor);
     }
 
     //this method is to enforce the thread to sleep while the sensor is not ready
-    public synchronized void waitTheReadyCommand() throws InterruptedException {
-        this.wait();
+    public synchronized void waitTheReadyCommand() throws InterruptedException, IOException {
+        objectInputStream.readBoolean();
+        sensor.runTheRequestReceiver();
+        synchronized (this) {
+            this.wait();
+        }
     }
 
     //send ready to Supervisor and notify the thread to continue to next step
     public synchronized void changeStateToReady() throws IOException {
         objectOutputStream.writeBoolean(true);
-        sensor.getDescriptor().setState(Descriptor.READY);
+        objectInputStream.readBoolean();
+        socket.close();
         synchronized (sensor.getWaitForReady()) {
             sensor.getWaitForReady().notify();
         }
@@ -82,6 +90,17 @@ public class ConnectionWithSupervisor extends Thread{
 
             datagramPacket=new DatagramPacket(data,data.length,supervisorHost,portSupervisorUDP);
             datagramSocket.send(datagramPacket);
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+            registerAndStartWork();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
