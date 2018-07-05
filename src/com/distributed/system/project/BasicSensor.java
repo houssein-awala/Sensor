@@ -1,5 +1,6 @@
 package com.distributed.system.project;
 
+import java.awt.*;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -99,8 +100,23 @@ public class BasicSensor extends UnicastRemoteObject implements ISensor,Runnable
             this.routingTable = routingTable;
         }
     }
+
+    @Override
+    public void editSensor(String id, int type, Point position, int state) {
+        this.getDescriptor().type = type;
+        this.getDescriptor().id=id;
+        this.getDescriptor().state=state;
+        this.getDescriptor().position=position;
+    }
+
+    @Override
+    public void deleteSensor(String id) {
+        //kill the sensor
+    }
+
     @Override
     public void run() {
         connectionWithSupervisor.start();
     }
+
 }
